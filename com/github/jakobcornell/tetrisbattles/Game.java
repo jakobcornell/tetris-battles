@@ -10,7 +10,7 @@ public class Game {
 
 	// direction blocks move
 	public static enum Direction {
-		UP, DOWN
+		UP, DOWN, LEFT, RIGHT;
 	}
 
 	private BlockRow[] rows;
@@ -60,8 +60,43 @@ public class Game {
 	private boolean canRotate(Tetromino t) {
 	
 	}
-	private boolean canMove(Tetromino t) {
-	
+
+	private boolean canMove(Tetromino t, Direction dir) {
+		int dr, dc;
+		switch (dir) {
+			case UP:
+			dr = -1;
+			dc = 0;
+			break;
+			case DOWN:
+			dr = 1;
+			dc = 0;
+			break;
+			case LEFT:
+			dr = 0;
+			dc = -1;
+			break;
+			case RIGHT:
+			dr = 0;
+			dc = 1;
+		}
+		for (int i = 0; i < t.blocks.length; i += 1) {
+			for (int j = 0; j < t.blocks[0].length; j += 1) {
+				int boardRow = t.row + i + dr;
+				int boardCol = t.col + j + dc;
+				if (
+					t.blocks[i][j] != null &&
+					boardRow >= 0 &&
+					boardRow < height &&
+					boardCol >= 0 &&
+					boardCol < width &&
+					rows[boardRow].get(boardCol) != null
+				) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	// one block separation collision check
@@ -72,8 +107,21 @@ public class Game {
 	private void rotate(Tetromino t) {
 	
 	}
-	private void move(Tetromino t) {
-		
+
+	private void move(Tetromino t, Direction dir) {
+		switch (dir) {
+			case UP:
+			t.row -= 1;
+			break;
+			case DOWN:
+			t.row += 1;
+			break;
+			case LEFT:
+			t.col -= 1;
+			break;
+			case RIGHT:
+			t.col += 1;
+		}
 	}
 
 	// move tetromino blocks to the static board
@@ -84,7 +132,7 @@ public class Game {
 	public void getBlocks(Block[][] blocks) {
 		for (int i = 0; i < height; i += 1) {
 			for (int j = 0; j < width; j += 1) {
-				blocks[i][j] rows[i].get(j);
+				blocks[i][j] = rows[i].get(j);
 			}
 		}
 	}
