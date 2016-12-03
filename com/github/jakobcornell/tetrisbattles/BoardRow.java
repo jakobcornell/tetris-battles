@@ -8,7 +8,7 @@ public class BoardRow {
 		
 	}
 
-	public isFull() {
+	public boolean isFull() {
 		return full;
 	}
 }
