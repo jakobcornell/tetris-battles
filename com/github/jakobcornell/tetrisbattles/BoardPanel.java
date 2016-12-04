@@ -28,10 +28,10 @@ public class BoardPanel extends JPanel {
 		for(int r=0; r<game.height; r+=1) {
 			for(int c=0; c<game.width; c+=1) {
 				Block block;
-				if (perspective == Game.Direction.Up) {
+				if (perspective == Game.Direction.UP) {
 					block = gameState[r][c];
 				}
-				else {
+				else if (perspective == Game.Direction.DOWN) {
 					block = gameState[game.height - r - 1][game.width - c - 1];
 				}
 				if (block != null) {
