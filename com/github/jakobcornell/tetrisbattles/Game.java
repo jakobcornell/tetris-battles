@@ -17,41 +17,48 @@ public class Game {
 	private Tetromino one;
 	private Tetromino two;
 	private Random tieBreaker = new Random();
+	private List<PlayerAction> pendingActions;
 
 	public Game() {
 		rows = new BlockRow[height];
 		for (int i = 0; i < rows.length; i += 1) {
 			rows[i] = new BlockRow();
 		}
+		// finish constructing
+	}
+
+	public enqueueAction(PlayerAction action) {
+		pendingActions.add(action);
 	}
 
 	public void tick() {
-		boolean oneMove = /* player one moves */ || one.getAge() % ticksPerStep == 0;
-		boolean twoMove = /* player two moves */ || two.getAge() % ticksPerStep == 0;
-		if (oneMove && twoMove && collide(one, two)) {
-			// break tie
-		}
-		else {
-			if (oneMove) {
-				if (canMove(one)) {
-					move(one);
+		for (PlayerAction action : pendingActions) {
+			boolean oneMove = /* player one moves */ || one.getAge() % ticksPerStep == 0;
+			boolean twoMove = /* player two moves */ || two.getAge() % ticksPerStep == 0;
+			if (oneMove && twoMove && collide(one, two)) {
+				// break tie
+			}
+			else {
+				if (oneMove) {
+					if (canMove(one)) {
+						move(one);
+					}
+					else {
+						freeze(one);
+						// one is stale
+					}
 				}
-				else {
-					freeze(one);
-					// one is stale
+				if (twoMove) {
+					if (canMove(two)) {
+						move(two);
+					}
+					else {
+						freeze(two);
+						// two is stale
+					}
 				}
 			}
-			if (twoMove) {
-				if (canMove(two)) {
-					move(two);
-				}
-				else {
-					freeze(two);
-					// two is stale
-				}
-			}
 		}
-
 
 		one.age();
 		two.age();
@@ -101,7 +108,7 @@ public class Game {
 
 	// one block separation collision check
 	private boolean collide(Tetromino one, Tetromino two) {
-		
+		if (
 	}
 
 	private void rotate(Tetromino t) {
