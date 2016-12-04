@@ -27,38 +27,13 @@ public class Game {
 		// finish constructing
 	}
 
-	public enqueueAction(PlayerAction action) {
+	public void enqueueAction(PlayerAction action) {
 		pendingActions.add(action);
 	}
 
 	public void tick() {
 		for (PlayerAction action : pendingActions) {
-			// needs adapting to action list
-			boolean oneMove = /* player one moves */ || one.getAge() % ticksPerStep == 0;
-			boolean twoMove = /* player two moves */ || two.getAge() % ticksPerStep == 0;
-			if (oneMove && twoMove && collide(one, two)) {
-				// break tie
-			}
-			else {
-				if (oneMove) {
-					if (canMove(one)) {
-						move(one);
-					}
-					else {
-						freeze(one);
-						// one is stale
-					}
-				}
-				if (twoMove) {
-					if (canMove(two)) {
-						move(two);
-					}
-					else {
-						freeze(two);
-						// two is stale
-					}
-				}
-			}
+			
 		}
 
 		one.age();
@@ -110,7 +85,7 @@ public class Game {
 
 	// one block separation collision check
 	private boolean collide(Tetromino one, Tetromino two) {
-		if (
+
 	}
 
 	private void rotate(Tetromino t) {
