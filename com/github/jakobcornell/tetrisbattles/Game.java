@@ -33,6 +33,7 @@ public class Game {
 
 	public void tick() {
 		for (PlayerAction action : pendingActions) {
+			// needs adapting to action list
 			boolean oneMove = /* player one moves */ || one.getAge() % ticksPerStep == 0;
 			boolean twoMove = /* player two moves */ || two.getAge() % ticksPerStep == 0;
 			if (oneMove && twoMove && collide(one, two)) {
@@ -68,6 +69,7 @@ public class Game {
 	
 	}
 
+	// collision detection between tetromino and static blocks
 	private boolean canMove(Tetromino t, Direction dir) {
 		int dr, dc;
 		switch (dir) {
@@ -142,5 +144,6 @@ public class Game {
 				blocks[i][j] = rows[i].get(j);
 			}
 		}
+		// TODO add (active) tetrominos
 	}
 }
