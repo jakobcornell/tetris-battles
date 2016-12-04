@@ -4,6 +4,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.JFrame;
 import java.awt.Container;
 import javax.swing.BoxLayout;
+import javax.swing.Timer;
+import java.util.Map;
+import java.util.HashMap;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Main {
 	public static void main(String[] args) {
@@ -34,8 +41,8 @@ public class Main {
 				frame.addKeyListener(keyListener);
 				Container content = frame.getContentPane();
 				content.setLayout(new BoxLayout(content, BoxLayout.X_AXIS));
-				content.add(new GamePanel(game, Game.Direction.Up, 32));
-				content.add(new GamePanel(game, Game.Direction.Down, 32));
+				content.add(new BoardPanel(game, Game.Direction.UP, 32));
+				content.add(new BoardPanel(game, Game.Direction.DOWN, 32));
 				frame.pack();
 				frame.setVisible(true);
 				tickTimer.start();

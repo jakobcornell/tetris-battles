@@ -1,6 +1,8 @@
 package com.github.jakobcornell.tetrisbattles;
 
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -17,12 +19,12 @@ public class Game {
 	private Tetromino one;
 	private Tetromino two;
 	private Random tieBreaker = new Random();
-	private List<PlayerAction> pendingActions;
+	private List<PlayerAction> pendingActions = new ArrayList<>();
 
 	public Game() {
 		rows = new BlockRow[height];
 		for (int i = 0; i < rows.length; i += 1) {
-			rows[i] = new BlockRow();
+			rows[i] = new BlockRow(width);
 		}
 		// finish constructing
 	}
@@ -35,13 +37,18 @@ public class Game {
 		for (PlayerAction action : pendingActions) {
 			
 		}
+		pendingActions.clear();
 
-		one.age();
-		two.age();
+		if (one != null) {
+			one.age();
+		}
+		if (two != null) {
+			two.age();
+		}
 	}
 
 	private boolean canRotate(Tetromino t) {
-	
+		return false;
 	}
 
 	// collision detection between tetromino and static blocks
@@ -63,6 +70,8 @@ public class Game {
 			case RIGHT:
 			dr = 0;
 			dc = 1;
+			default:
+			return false;
 		}
 		for (int i = 0; i < t.blocks.length; i += 1) {
 			for (int j = 0; j < t.blocks[0].length; j += 1) {
@@ -85,7 +94,7 @@ public class Game {
 
 	// one block separation collision check
 	private boolean collide(Tetromino one, Tetromino two) {
-
+		return false;
 	}
 
 	private void rotate(Tetromino t) {

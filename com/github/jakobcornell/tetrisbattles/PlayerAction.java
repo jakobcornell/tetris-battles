@@ -1,21 +1,14 @@
 package com.github.jakobcornell.tetrisbattles;
 
 public enum PlayerAction {
-	P1ROTATE (UP, ROTATE, null),
-	P1LEFT   (UP, MOVE, Game.Direction.LEFT),
-	P1DOWN   (UP, MOVE, Game.Direction.DOWN),
-	P1RIGHT  (UP, MOVE, Game.Direction.RIGHT),
-	P2ROTATE (DOWN, ROTATE, null),
-	P2LEFT   (DOWN, MOVE, Game.Direction.LEFT),
-	P2DOWN   (DOWN, MOVE, Game.Direction.DOWN),
-	P2RIGHT  (DOWN, MOVE, Game.Direction.RIGHT);
-
-	public static enum PlayerActionType {
-		MOVE, ROTATE
-	}
-
-	public static final PlayerActionType MOVE = PlayerActionType.MOVE;
-	public static final PlayerActionType ROTATE = PlayerActionType.ROTATE;
+	P1ROTATE (Game.Direction.UP, PlayerActionType.ROTATE, null),
+	P1LEFT   (Game.Direction.UP, PlayerActionType.MOVE, Game.Direction.LEFT),
+	P1DOWN   (Game.Direction.UP, PlayerActionType.MOVE, Game.Direction.DOWN),
+	P1RIGHT  (Game.Direction.UP, PlayerActionType.MOVE, Game.Direction.RIGHT),
+	P2ROTATE (Game.Direction.DOWN, PlayerActionType.ROTATE, null),
+	P2LEFT   (Game.Direction.DOWN, PlayerActionType.MOVE, Game.Direction.LEFT),
+	P2DOWN   (Game.Direction.DOWN, PlayerActionType.MOVE, Game.Direction.DOWN),
+	P2RIGHT  (Game.Direction.DOWN, PlayerActionType.MOVE, Game.Direction.RIGHT);
 
 	public final Game.Direction perspective;
 	public final PlayerActionType type;

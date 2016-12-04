@@ -15,6 +15,7 @@ public class BoardPanel extends JPanel {
 	private final Block[][] gameState;
 
 	public BoardPanel(Game game, Game.Direction perspective, int zoomLevel) {
+		this.game = game;
 		this.perspective = perspective;
 		this.zoomLevel = zoomLevel;
 		this.gameState = new Block[game.height][game.width];
@@ -27,7 +28,7 @@ public class BoardPanel extends JPanel {
 		game.getBlocks(gameState);
 		for(int r=0; r<game.height; r+=1) {
 			for(int c=0; c<game.width; c+=1) {
-				Block block;
+				Block block = null;
 				if (perspective == Game.Direction.UP) {
 					block = gameState[r][c];
 				}
@@ -38,7 +39,7 @@ public class BoardPanel extends JPanel {
 					Shape rectangle = new Rectangle(100*r + 2, 100*c + 2, 96, 96);
 					ctx.setColor(Color.WHITE);
 					ctx.fill(rectangle);
-					ctx.setColor(new Color(block.color == Block.Color.Red ? 0 : 2.0f/3, 1.0f, ((float) shade)/256));
+					ctx.setColor(new Color(block.color == Block.Color.RED ? 0 : 2.0f/3, 1.0f, ((float) block.shade)/256));
 					ctx.draw(rectangle);
 				}
 			}
