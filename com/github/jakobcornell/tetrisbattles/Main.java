@@ -8,20 +8,29 @@ import javax.swing.BoxLayout;
 public class Main {
 	public static void main(String[] args) {
 		final Game game = new Game();
-		KeyListener keyListener = new KeyListener() {
+		final KeyListener keyListener = new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				PlayerAction action = keyMap.get(e);
 				if (action != null) {
-					game.queueAction(action);
+					game.enqueueAction(action);
 				}
 			}
 			public void keyReleased(KeyEvent e) {}
 			public void keyTyped(KeyEvent e) {}
 		};
 
+		final ActionListener timerListener = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				game.tick();
+			}
+		};
+
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				JFrame frame = new JFrame("buffy");
+				Timer tickTimer = new Timer(0, timerListener);
+				tickTimer.setDelay(65);
+				tickTimer.setRepeats(true);
 				frame.addKeyListener(keyListener);
 				Container content = frame.getContentPane();
 				content.setLayout(new BoxLayout(content, BoxLayout.X_AXIS));
@@ -29,6 +38,7 @@ public class Main {
 				content.add(new GamePanel(game, Game.Direction.Down, 32));
 				frame.pack();
 				frame.setVisible(true);
+				tickTimer.start();
 			}
 		});
 	}
