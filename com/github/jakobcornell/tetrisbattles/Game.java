@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Random;
 
 public class Game {
 	public static final int width = 12, height = 30;
@@ -18,7 +17,6 @@ public class Game {
 	private BlockRow[] rows;
 	private Tetromino one;
 	private Tetromino two;
-	private Random tieBreaker = new Random();
 	private List<PlayerAction> pendingActions = new ArrayList<>();
 
 	public Game() {
