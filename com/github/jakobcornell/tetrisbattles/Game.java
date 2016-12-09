@@ -76,12 +76,12 @@ public class Game {
 				int boardRow = t.row + i + dr;
 				int boardCol = t.col + j + dc;
 				if (
-					t.blocks[i][j] != null &&
-					boardRow >= 0 &&
-					boardRow < height &&
-					boardCol >= 0 &&
-					boardCol < width &&
-					rows[boardRow].get(boardCol) != null
+					t.blocks[i][j] != null
+					&& boardRow >= 0
+					&& boardRow < height
+					&& boardCol >= 0
+					&& boardCol < width
+					&& rows[boardRow].get(boardCol) != null
 				) {
 					return false;
 				}
@@ -117,7 +117,21 @@ public class Game {
 
 	// move tetromino blocks to the static board
 	private void freeze(Tetromino t) {
-		
+		for (int i = 0; i < t.blocks.length; i += 1) {
+			for (int j = 0; j < t.blocks[0].length; j += 1) {
+				int boardRow = t.row + i - 2;
+				int boardCol = t.col + j - 2;
+				if (
+					t.blocks[i][j] != null
+					&& boardRow >= 0
+					&& boardRow < height
+					&& boardCol >= 0
+					&& boardCol < width
+				) {
+					rows[boardRow].set(boardCol, t.blocks[i][j]);
+				}
+			}
+		}
 	}
 
 	public void getBlocks(Block[][] blocks) {

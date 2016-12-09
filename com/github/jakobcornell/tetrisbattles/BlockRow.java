@@ -12,6 +12,10 @@ public class BlockRow {
 		return blocks[column];
 	}
 
+	public void set(int column, Block block) {
+		blocks[column] = block;
+	}
+
 	public boolean isFull() {
 		return full;
 	}
