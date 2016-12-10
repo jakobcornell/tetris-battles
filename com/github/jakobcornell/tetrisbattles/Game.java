@@ -134,12 +134,29 @@ public class Game {
 		}
 	}
 
+	// for rendering
 	public void getBlocks(Block[][] blocks) {
 		for (int i = 0; i < height; i += 1) {
 			for (int j = 0; j < width; j += 1) {
 				blocks[i][j] = rows[i].get(j);
 			}
 		}
-		// TODO add (active) tetrominos
+		for (Tetromino t : new Tetromino[] { one, two }) {
+			for (int i = 0; i < t.blocks.length; i += 1) {
+				for (int j = 0; j < t.blocks[0].length; j += 1) {
+					int boardRow = t.row + i - 2;
+					int boardCol = t.col + j - 2;
+					if (
+						t.blocks[i][j] != null
+						&& boardRow >= 0
+						&& boardRow < height
+						&& boardCol >= 0
+						&& boardCol < width
+					) {
+						blocks[i][j] = t.blocks[i][j];
+					}
+				}
+			}
+		}
 	}
 }
