@@ -90,11 +90,6 @@ public class Game {
 		return true;
 	}
 
-	// one block separation collision check
-	private boolean collide(Tetromino one, Tetromino two) {
-		return false;
-	}
-
 	private void rotate(Tetromino t) {
 	
 	}
