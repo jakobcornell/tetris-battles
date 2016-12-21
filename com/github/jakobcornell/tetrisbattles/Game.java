@@ -33,7 +33,15 @@ public class Game {
 
 	public void tick() {
 		for (PlayerAction action : pendingActions) {
-			
+			switch (action.type) {
+				case MOVE:
+				if (action.moveDirection == Direction.DOWN) {
+					
+				}
+				break;
+				case ROTATE:
+				// rotate
+			}
 		}
 		pendingActions.clear();
 
@@ -49,8 +57,9 @@ public class Game {
 		return false;
 	}
 
-	// collision detection between tetromino and static blocks
+	// collision detection
 	private boolean canMove(Tetromino t, Direction dir) {
+		// (t.row + dr, t.col + dc) will be new position
 		int dr, dc;
 		switch (dir) {
 			case UP:
@@ -71,6 +80,7 @@ public class Game {
 			default:
 			return false;
 		}
+		// check against static blocks
 		for (int i = 0; i < t.blocks.length; i += 1) {
 			for (int j = 0; j < t.blocks[0].length; j += 1) {
 				int boardRow = t.row + i + dr;
@@ -82,6 +92,26 @@ public class Game {
 					&& boardCol >= 0
 					&& boardCol < width
 					&& rows[boardRow].get(boardCol) != null
+				) {
+					return false;
+				}
+			}
+		}
+		// check against opponent tetromino
+		Tetromino o = t == one ? two : one;
+		int r1 = Math.max(o.row, t.row + dr) - 2;
+		int r2 = Math.min(o.row, t.row + dr) + 2;
+		int c1 = Math.max(o.col, t.col + dc) - 2;
+		int c2 = Math.min(o.col, t.col + dc) + 2;
+		for (int r = r1; r < r2; r += 1) {
+			for (int c = c1; c < c2; c += 1) {
+				if (
+					r >= 0
+					&& r < height
+					&& c >= 0
+					&& c < width
+					&& t.blocks[r - (t.row + dr) + 2][c - (t.col + dc) + 2] != null
+					&& o.blocks[r - o.row + 2][c - o.col + 2] != null
 				) {
 					return false;
 				}
