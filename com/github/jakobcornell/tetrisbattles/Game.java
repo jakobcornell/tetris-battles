@@ -9,7 +9,7 @@ public class Game {
 	public static final int width = 12, height = 30;
 	public static final int ticksPerStep = 10;
 
-	// direction blocks move
+	// direction of block movement or game perspective (right-side-UP or upside-DOWN)
 	public static enum Direction {
 		UP, DOWN, LEFT, RIGHT;
 	}
