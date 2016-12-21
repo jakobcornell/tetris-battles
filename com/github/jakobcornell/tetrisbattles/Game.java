@@ -15,7 +15,7 @@ public class Game {
 	}
 
 	private BlockRow[] rows;
-	private Tetromino one;
+	private Tetromino one; // perspective is UP
 	private Tetromino two;
 	private List<PlayerAction> pendingActions = new ArrayList<>();
 
@@ -33,24 +33,41 @@ public class Game {
 
 	public void tick() {
 		for (PlayerAction action : pendingActions) {
-			switch (action.type) {
-				case MOVE:
-				if (action.moveDirection == Direction.DOWN) {
-					
+			Tetromino t = (action.perspective == Direction.UP) ? one : two;
+			if (t != null) {
+				switch (action.type) {
+					case MOVE:
+					if (action.moveDirection == Direction.DOWN) {
+						Direction dir = (action.perspective == Direction.UP) ? Direction.DOWN : Direction.UP;
+						if (canMove(t, dir)) {
+							move(t, dir);
+						}
+						else {
+							freeze(t);
+							// and now...the price of abstraction
+							if (t == one) {
+								one = null;
+							}
+							else {
+								two = null;
+							}
+						}
+					}
+					else {
+						// TODO: are LEFT and RIGHT relative?
+						if (canMove(t, action.moveDirection)) {
+							move(t, action.moveDirection):
+						}
+					}
+					break;
+					case ROTATE:
+					// rotate
 				}
-				break;
-				case ROTATE:
-				// rotate
 			}
 		}
 		pendingActions.clear();
 
-		if (one != null) {
-			one.age();
-		}
-		if (two != null) {
-			two.age();
-		}
+		// age tetrominos
 	}
 
 	private boolean canRotate(Tetromino t) {
