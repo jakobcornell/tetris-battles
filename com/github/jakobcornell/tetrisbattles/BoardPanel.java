@@ -39,7 +39,7 @@ public class BoardPanel extends JPanel {
 					Shape rectangle = new Rectangle(100*r + 2, 100*c + 2, 96, 96);
 					ctx.setColor(Color.WHITE);
 					ctx.fill(rectangle);
-					ctx.setColor(new Color(block.color == Block.Color.RED ? 0 : 2.0f/3, 1.0f, ((float) block.shade)/256));
+					ctx.setColor(block.color);
 					ctx.draw(rectangle);
 				}
 			}
