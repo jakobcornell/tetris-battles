@@ -26,18 +26,19 @@ public class Main {
 			public void keyTyped(KeyEvent e) {}
 		};
 
-		final ActionListener timerListener = new ActionListener() {
+		ActionListener timerListener = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				game.tick();
 			}
 		};
 
-		SwingUtilities.invokeLater(new Runnable() {
+		final Timer tickTimer = new Timer(0, timerListener);
+		tickTimer.setDelay(65);
+		tickTimer.setRepeats(true);
+
+		SwingUtilities.invokeNow(new Runnable() {
 			public void run() {
-				JFrame frame = new JFrame("buffy");
-				Timer tickTimer = new Timer(0, timerListener);
-				tickTimer.setDelay(65);
-				tickTimer.setRepeats(true);
+				final JFrame frame = new JFrame("buffy");
 				frame.addKeyListener(keyListener);
 				Container content = frame.getContentPane();
 				content.setLayout(new BoxLayout(content, BoxLayout.X_AXIS));
@@ -45,6 +46,11 @@ public class Main {
 				content.add(new BoardPanel(game, Game.Direction.DOWN, 32));
 				frame.pack();
 				frame.setVisible(true);
+			}
+		});
+
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
 				tickTimer.start();
 			}
 		});
