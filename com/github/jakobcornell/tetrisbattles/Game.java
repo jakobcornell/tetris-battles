@@ -90,7 +90,7 @@ public class Game {
 		int newR = t.row + d.dr;
 		int newC = t.col + d.dc;
 		for (int rOff = 0; rOff < t.blocks.length; rOff += 1) {
-			for (int cOff = 0; cOff < t.blocks[r].length; cOff += 1) {
+			for (int cOff = 0; cOff < t.blocks[rOff].length; cOff += 1) {
 				int boardRow = newR + rOff;
 				int boardCol = newC + cOff;
 				// check against board edges
