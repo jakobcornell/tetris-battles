@@ -93,17 +93,26 @@ public class Game {
 				int boardRow = newR + rOff;
 				int boardCol = newC + cOff;
 				// check against board edges
-				if (
-					boardRow < 0
-					|| boardRow >= height
-					|| boardCol < 0
-					|| boardCol >= width
-				) {
-					// TODO: handle
+				if (t.blocks[rOff][cOff] != null) {
+					if (
+						d == Direction.DOWN && boardRow >= height
+						|| d == Direction.UP && boardRow < 0
+					) {
+						freeze(t);
+						activeTetrominos.remove(t);
+						newTetrominos.add(spawn(d));
+						return;
+					}
+					else if (boardCol < 0 || boardCol >= width) {
+						return;
+					}
 				}
 				// check against static blocks
 				if (t.blocks[rOff][cOff] != null && rows[boardRow].get(boardCol) != null) {
-					// TODO: handle
+					freeze(t);
+					activeTetrominos.remove(t);
+					newTetrominos.add(spawn(d));
+					return;
 				}
 				// check against other tetrominos
 				for (Tetromino other : activeTetrominos.toArray(new Tetromino[0])) {
@@ -118,7 +127,7 @@ public class Game {
 									t.blocks[r - newR][c - newC] != null
 									&& other.blocks[r - other.row][c - other.col] != null
 								) {
-									// TODO: handle
+									
 								}
 							}
 						}
@@ -143,8 +152,8 @@ public class Game {
 	private void freeze(Tetromino t) {
 		for (int r = 0; r < t.blocks.length; r += 1) {
 			for (int c = 0; c < t.blocks[0].length; c += 1) {
-				int boardRow = t.row + r - 2;
-				int boardCol = t.col + c - 2;
+				int boardRow = t.row + r;
+				int boardCol = t.col + c;
 				if (
 					t.blocks[r][c] != null
 					&& boardRow >= 0
@@ -174,8 +183,8 @@ public class Game {
 		for (Tetromino t : activeTetrominos) {
 			for (int r = 0; r < t.blocks.length; r += 1) {
 				for (int c = 0; c < t.blocks[0].length; c += 1) {
-					int boardRow = t.row + r - 2;
-					int boardCol = t.col + c - 2;
+					int boardRow = t.row + r;
+					int boardCol = t.col + c;
 					if (t.blocks[r][c] != null) {
 						blocks[r][c] = t.blocks[r][c];
 					}
