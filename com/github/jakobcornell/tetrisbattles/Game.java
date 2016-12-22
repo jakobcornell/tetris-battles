@@ -82,9 +82,14 @@ public class Game {
 		}
 
 		for (Tetromino t : newTetrominos) {
-			if (/*can add*/) {
-				activeTetrominos.add(t);
+			for (int rOff = 0; rOff < t.blocks.length; rOff += 1) {
+				for (int cOff = 0; cOff < t.blocks[rOff].length; cOff += 1) {
+					if (t.blocks[rOff][cOff] != null && rows[t.row + rOff].get(t.col + cOff) != null) {
+						// game over
+					}
+				}
 			}
+			activeTetrominos.add(t);
 		}
 		newTetrominos.clear();
 	}
