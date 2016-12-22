@@ -109,9 +109,11 @@ public class Game {
 				}
 				// check against static blocks
 				if (t.blocks[rOff][cOff] != null && rows[boardRow].get(boardCol) != null) {
-					freeze(t);
-					activeTetrominos.remove(t);
-					newTetrominos.add(spawn(d));
+					if (d == t.movement) {
+						freeze(t);
+						activeTetrominos.remove(t);
+						newTetrominos.add(spawn(d));
+					}
 					return;
 				}
 				// check against other tetrominos
@@ -127,7 +129,15 @@ public class Game {
 									t.blocks[r - newR][c - newC] != null
 									&& other.blocks[r - other.row][c - other.col] != null
 								) {
-									
+									if (d == t.movement) {
+										freeze(t);
+										freeze(other);
+										activeTetrominos.remove(t);
+										activeTetrominos.remove(other);
+										newTetrominos.add(spawn(t.movement));
+										newTetrominos.add(spawn(other.movement));
+									}
+									return;
 								}
 							}
 						}
