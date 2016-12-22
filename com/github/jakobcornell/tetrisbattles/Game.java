@@ -49,12 +49,11 @@ public class Game {
 		pendingActions.add(action);
 	}
 
-	private List<Tetromino> newTetrominos = new ArrayList<>(2);
 	public void tick() {
 		for (PlayerAction action : pendingActions) {
 			Tetromino subject = null;
 			for (Tetromino t : activeTetrominos) {
-				if (t.movement.reverse() == action.perspective) {
+				if (!t.isFrozen && t.movement.reverse() == action.perspective) {
 					subject = t;
 					break;
 				}
@@ -74,24 +73,38 @@ public class Game {
 		}
 		pendingActions.clear();
 
-		for (Tetromino t : activeTetrominos.toArray(new Tetromino[0])) {
+		for (Tetromino t : activeTetrominos) {
 			t.age += 1;
 			if (t.age % ticksPerStep == 0) {
 				processMove(t, t.movement);
 			}
 		}
 
-		for (Tetromino t : newTetrominos) {
-			for (int rOff = 0; rOff < t.blocks.length; rOff += 1) {
-				for (int cOff = 0; cOff < t.blocks[rOff].length; cOff += 1) {
-					if (t.blocks[rOff][cOff] != null && rows[t.row + rOff].get(t.col + cOff) != null) {
-						// game over
-					}
+		for (Tetromino t : activeTetrominos.toArray(new Tetromino[0])) {
+			if (t.isFrozen) {
+				freeze(t);
+				activeTetrominos.remove(t);
+				Tetromino newTetromino = spawn(t.movement);
+				if (newTetromino == null) {
+					// player loses
+				}
+				else {
+					activeTetrominos.add(newTetromino);
 				}
 			}
-			activeTetrominos.add(t);
 		}
-		newTetrominos.clear();
+
+		// TODO: move to spawn
+		//for (Tetromino t : newTetrominos) {
+		//	for (int rOff = 0; rOff < t.blocks.length; rOff += 1) {
+		//		for (int cOff = 0; cOff < t.blocks[rOff].length; cOff += 1) {
+		//			if (t.blocks[rOff][cOff] != null && rows[t.row + rOff].get(t.col + cOff) != null) {
+		//				// game over
+		//			}
+		//		}
+		//	}
+		//	activeTetrominos.add(t);
+		//}
 	}
 
 	private void processMove(Tetromino t, Direction d) {
@@ -107,9 +120,7 @@ public class Game {
 						d == Direction.DOWN && boardRow >= height
 						|| d == Direction.UP && boardRow < 0
 					) {
-						freeze(t);
-						activeTetrominos.remove(t);
-						newTetrominos.add(spawn(d));
+						t.isFrozen = true;
 						return;
 					}
 					else if (boardCol < 0 || boardCol >= width) {
@@ -119,14 +130,12 @@ public class Game {
 				// check against static blocks
 				if (t.blocks[rOff][cOff] != null && rows[boardRow].get(boardCol) != null) {
 					if (d == t.movement) {
-						freeze(t);
-						activeTetrominos.remove(t);
-						newTetrominos.add(spawn(d));
+						t.isFrozen = true;
 					}
 					return;
 				}
 				// check against other tetrominos
-				for (Tetromino other : activeTetrominos.toArray(new Tetromino[0])) {
+				for (Tetromino other : activeTetrominos) {
 					if (other != t) {
 						int r1 = Math.max(other.row, newR);
 						int r2 = Math.min(other.row, newR) + 4;
@@ -139,12 +148,8 @@ public class Game {
 									&& other.blocks[r - other.row][c - other.col] != null
 								) {
 									if (d == t.movement) {
-										freeze(t);
-										freeze(other);
-										activeTetrominos.remove(t);
-										activeTetrominos.remove(other);
-										newTetrominos.add(spawn(t.movement));
-										newTetrominos.add(spawn(other.movement));
+										t.isFrozen = true;
+										other.isFrozen = true;
 									}
 									return;
 								}
