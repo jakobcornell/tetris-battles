@@ -16,22 +16,30 @@ public class Tetromino {
 		this.rotationMode = rotationMode;
 	}
 
-	public Tetromino(TetrominoPrototype proto) {
+	public Tetromino(TetrominoPrototype proto, Game.Direction movement) {
 		this(new Block[4][4], proto.rotationMode);
-		int mask = 0b1;
-		for(Block[] blockRow : blocks) {
-			for(int c=3; c>=0; c--) {
-				if ((mask & proto.template) != 0) {
+		int bit = 0, step = 0;
+		if (movement == Game.Direction.DOWN) {
+			bit = 0; step = 1;
+		}
+		else if (movement == Game.Direction.UP) {
+			bit = 15; step = 15;
+		}
+		else {
+			throw new IllegalArgumentException("movement must be UP or DOWN");
+		}
+		for (Block[] blockRow : blocks) {
+			for (int c=0; c<4; c+=1) {
+				if ((1<<bit & proto.template) != 0) {
 					blockRow[c] = new Block();
 				}
-				mask <<= 1;
+				bit = (bit+step)&0xF;
 			}
 		}
 	}
 
 	public Tetromino(Game.Direction movement) {
-		this(TetrominoPrototype.getRandom(random));
-		this.movement = movement;
+		this(TetrominoPrototype.getRandom(random), movement);
 		float ang = (float) Math.PI * (random.nextFloat() * 14 + 1) / 32;
 		setColor(Color.getHSBColor(movement == Game.Direction.UP ? 0.5f : 0f, (float) Math.cos(ang), (float) Math.sin(ang)));
 	}
@@ -49,13 +57,13 @@ public class Tetromino {
 	protected static Random random = new Random();
 
 	protected static enum TetrominoPrototype {
-		ITetromino(0x0F00, RotationMode.Even),
-		OTetromino(0x0660, RotationMode.Even),
-		TTetromino(0x0E40, RotationMode.Odd),
-		STetromino(0x0C60, RotationMode.Odd),
-		ZTetromino(0x06C0, RotationMode.Odd),
-		JTetromino(0x0E80, RotationMode.Odd),
-		LTetromino(0x0E20, RotationMode.Odd);
+		I(0x0F00, RotationMode.Even),
+		O(0x0660, RotationMode.Even),
+		T(0x0720, RotationMode.Odd),
+		S(0x0360, RotationMode.Odd),
+		Z(0x0630, RotationMode.Odd),
+		J(0x0710, RotationMode.Odd),
+		L(0x0740, RotationMode.Odd);
 
 		private final int template;
 		private final RotationMode rotationMode;
