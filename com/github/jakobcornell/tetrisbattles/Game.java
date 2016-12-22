@@ -151,7 +151,68 @@ public class Game {
 	}
 
 	private boolean canRotate(Tetromino t) {
-		// TODO implement
+		// check against right board edge
+		for (int tr = 0; t.col + 3 - tr >= width; tr += 1) {
+			for (int tc = 0; tc < 4; tc += 1) {
+				if (t.blocks[tr][tc] != null) {
+					return false;
+				}
+			}
+		}
+
+		// check against top board edge
+		for (int tc = 0; t.row + tc < 0; tc += 1) {
+			for (int tr = 0; tr < 4; tr += 1) {
+				if (t.blocks[tr][tc] != null) {
+					return false;
+				}
+			}
+		}
+
+		// check against left board edge
+		for (int tr = 3; t.col + 3 - tr < 0; tr -= 1) {
+			for (int tc = 0; tc < 4; tc += 1) {
+				if (t.blocks[tr][tc] != null) {
+					return false;
+				}
+			}
+		}
+
+		// check against bottom board edge
+		for (int tc = 3; t.row + tc >= height; tc -= 1) {
+			for (int tr = 0; tr < 4; tr += 1) {
+				if (t.blocks[tr][tc] != null) {
+					return false;
+				}
+			}
+		}
+
+		// check against existing blocks
+		for (int tr = 0; tr < 4; tr += 1) {
+			for (int tc = 0; tc < 4; tc += 1) {
+				if (t.blocks[tr][tc] != null && rows[t.row + tc].get(t.col + 3 - tr) != null) {
+					return false;
+				}
+			}
+		}
+
+		// check against other tetrominos
+		for (Tetromino other : activeTetrominos) {
+			if (t != other) {
+				int r1 = Math.max(other.row, t.row);
+				int r2 = Math.min(other.row, t.row) + 4;
+				int c1 = Math.max(other.col, t.col);
+				int c2 = Math.min(other.col, t.col) + 4;
+				for (int r = r1; r < r2; r += 1) {
+					for (int c = c1; c < c2; c += 1) {
+						if (t.blocks[r - t.row][3 - (c - t.row)] !=	null
+								&& other.blocks[r - other.row][c - other.col] != null) {
+							return false;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private void rotate(Tetromino t) {
