@@ -19,8 +19,8 @@ public class Tetromino {
 	public Tetromino(TetrominoPrototype proto, Color blockColor) {
 		this(new Block[4][4], proto.rotationMode);
 		int mask = 0b1;
-		for(Block[] blockRow : blocks) {
-			for(int c=3; c>=0; c--) {
+		for (Block[] blockRow : blocks) {
+			for (int c = 3; c >= 0; c -= 1) {
 				if ((mask & proto.template) != 0) {
 					blockRow[c] = new Block();
 					blockRow[c].color = blockColor;
