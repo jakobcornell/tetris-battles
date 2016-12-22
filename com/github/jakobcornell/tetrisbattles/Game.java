@@ -64,8 +64,7 @@ public class Game {
 			}
 			switch (action.type) {
 				case MOVE:
-				Direction realDirection = action.moveDirection.toAbsolute(action.perspective);
-				processMove(subject, realDirection);
+				processMove(subject, action.moveDirection);
 				break;
 				case ROTATE:
 				if (canRotate(subject)) {
