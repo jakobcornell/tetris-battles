@@ -16,14 +16,13 @@ public class Tetromino {
 		this.rotationMode = rotationMode;
 	}
 
-	public Tetromino(TetrominoPrototype proto, Color blockColor) {
+	public Tetromino(TetrominoPrototype proto) {
 		this(new Block[4][4], proto.rotationMode);
 		int mask = 0b1;
 		for(Block[] blockRow : blocks) {
 			for(int c=3; c>=0; c--) {
 				if ((mask & proto.template) != 0) {
 					blockRow[c] = new Block();
-					blockRow[c].color = blockColor;
 				}
 				mask <<= 1;
 			}
@@ -31,7 +30,20 @@ public class Tetromino {
 	}
 
 	public Tetromino(Game.Direction movement) {
-		this(TetrominoPrototype.getRandom(random), Color.BLUE);
+		this(TetrominoPrototype.getRandom(random));
+		this.movement = movement;
+		float ang = (float) Math.PI * (random.nextFloat() * 14 + 1) / 32;
+		setColor(Color.getHSBColor(movement == Game.Direction.UP ? 0.5f : 0f, (float) Math.cos(ang), (float) Math.sin(ang)));
+	}
+
+	public void setColor(Color c) {
+		for(Block[] blockRow : blocks) {
+			for(Block block : blockRow) {
+				if (block != null) {
+					block.color = c;
+				}
+			}
+		}
 	}
 
 	protected static Random random = new Random();
