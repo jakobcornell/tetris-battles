@@ -6,9 +6,9 @@ public enum PlayerAction {
 	P1DOWN   (Game.Direction.UP, PlayerActionType.MOVE, Game.Direction.DOWN),
 	P1RIGHT  (Game.Direction.UP, PlayerActionType.MOVE, Game.Direction.RIGHT),
 	P2ROTATE (Game.Direction.DOWN, PlayerActionType.ROTATE, null),
-	P2LEFT   (Game.Direction.DOWN, PlayerActionType.MOVE, Game.Direction.LEFT),
-	P2DOWN   (Game.Direction.DOWN, PlayerActionType.MOVE, Game.Direction.DOWN),
-	P2RIGHT  (Game.Direction.DOWN, PlayerActionType.MOVE, Game.Direction.RIGHT);
+	P2LEFT   (Game.Direction.DOWN, PlayerActionType.MOVE, Game.Direction.RIGHT),
+	P2DOWN   (Game.Direction.DOWN, PlayerActionType.MOVE, Game.Direction.UP),
+	P2RIGHT  (Game.Direction.DOWN, PlayerActionType.MOVE, Game.Direction.LEFT);
 
 	public final Game.Direction perspective;
 	public final PlayerActionType type;
