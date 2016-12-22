@@ -81,7 +81,11 @@ public class Game {
 			}
 		}
 
-		activeTetrominos.addAll(newTetrominos);
+		for (Tetromino t : newTetrominos) {
+			if (/*can add*/) {
+				activeTetrominos.add(t);
+			}
+		}
 		newTetrominos.clear();
 	}
 
@@ -179,7 +183,25 @@ public class Game {
 
 	private Tetromino spawn(Direction movement) {
 		Tetromino t = new Tetromino(movement);
-		// TODO Finish setting up t
+		t.col = width / 2 - 2;
+		if (movement == Direction.DOWN) {
+			int i;
+			for (i = 0; i < 16; i += 1) {
+				if (t.blocks[i / 4][i % 4] != null) {
+					break;
+				}
+			}
+			t.row = -(i / 4);
+		}
+		else if (movement == Direction.UP) {
+			int i;
+			for (i = 15; i >= 0; i -= 1) {
+				if (t.blocks[i / 4][i % 4] != null) {
+					break;
+				}
+			}
+			t.row = height - 1 - (i / 4);
+		}
 		return t;
 	}
 
