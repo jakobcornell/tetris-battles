@@ -7,6 +7,7 @@ public class Tetromino {
 	public final Block[][] blocks;
 	public final RotationMode rotationMode;
 
+	public boolean isFrozen = false;
 	public int age = 0; // increment each frame: trigger default movement on specific value
 	public Game.Direction movement;
 	public int row, col;
