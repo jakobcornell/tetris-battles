@@ -19,14 +19,17 @@ public class Game {
 			this.dc = dc;
 		}
 
-		private static Direction[] values = values();
 		public Direction reverse() {
-			return values[(ordinal() + 2) & 0b11];
-		}
-
-		// resolve `this`, a direction in `perspective`, to an absolute direction
-		public Direction toAbsolute(Direction perspective) {
-			return values[(ordinal() + perspective.ordinal() - 1) & 0b11];
+			switch (this) {
+				case RIGHT:
+				return LEFT;
+				case UP:
+				return DOWN;
+				case LEFT:
+				return RIGHT;
+				default:
+				return UP;
+			}
 		}
 	}
 
@@ -61,12 +64,13 @@ public class Game {
 			}
 			switch (action.type) {
 				case MOVE:
-					Direction realDirection = action.moveDirection.toAbsolute(action.perspective);
-					processMove(subject, realDirection);
+				Direction realDirection = action.moveDirection.toAbsolute(action.perspective);
+				processMove(subject, realDirection);
+				break;
 				case ROTATE:
-					if (canRotate(subject)) {
-						rotate(subject);
-					}
+				if (canRotate(subject)) {
+					rotate(subject);
+				}
 			}
 		}
 		pendingActions.clear();
@@ -83,101 +87,57 @@ public class Game {
 	}
 
 	private void processMove(Tetromino t, Direction d) {
-		if (canMove(t, d)) {
-			move(t, d);
+		int newR = t.row + d.dr;
+		int newC = t.col + d.dc;
+		for (int rOff = 0; rOff < t.blocks.length; rOff += 1) {
+			for (int cOff = 0; cOff < t.blocks[r].length; cOff += 1) {
+				int boardRow = newR + rOff;
+				int boardCol = newC + cOff;
+				// check against board edges
+				if (
+					boardRow < 0
+					|| boardRow >= height
+					|| boardCol < 0
+					|| boardCol >= width
+				) {
+					// TODO: handle
+				}
+				// check against static blocks
+				if (t.blocks[rOff][cOff] != null && rows[boardRow].get(boardCol) != null) {
+					// TODO: handle
+				}
+				// check against other tetrominos
+				for (Tetromino other : activeTetrominos.toArray(new Tetromino[0])) {
+					if (other != t) {
+						int r1 = Math.max(other.row, newR);
+						int r2 = Math.min(other.row, newR) + 4;
+						int c1 = Math.max(other.col, newC);
+						int c2 = Math.min(other.col, newC) + 4;
+						for (int r = r1; r < r2; r += 1) {
+							for (int c = c1; c < c2; c += 1) {
+								if (
+									t.blocks[r - newR][c - newC] != null
+									&& other.blocks[r - other.row][c - other.col] != null
+								) {
+									// TODO: handle
+								}
+							}
+						}
+					}
+				}
+			}
 		}
-		else if (d == t.movement) {
-			freeze(t);
-			activeTetrominos.remove(t);
-			newTetrominos.add(spawn(t.movement));
-		}
+		// no collisions
+		t.row = newR;
+		t.col = newC;
 	}
 
 	private boolean canRotate(Tetromino t) {
 		// TODO implement
 	}
 
-	// collision detection
-	private boolean canMove(Tetromino t, Direction dir) {
-		// (t.row + dr, t.col + dc) will be new position
-		int dr, dc;
-		switch (dir) {
-			case UP:
-			dr = -1;
-			dc = 0;
-			break;
-			case DOWN:
-			dr = 1;
-			dc = 0;
-			break;
-			case LEFT:
-			dr = 0;
-			dc = -1;
-			break;
-			case RIGHT:
-			dr = 0;
-			dc = 1;
-			default:
-			return false;
-		}
-		// check against static blocks
-		for (int i = 0; i < t.blocks.length; i += 1) {
-			for (int j = 0; j < t.blocks[0].length; j += 1) {
-				int boardRow = t.row + i + dr;
-				int boardCol = t.col + j + dc;
-				if (
-					t.blocks[i][j] != null
-					&& boardRow >= 0
-					&& boardRow < height
-					&& boardCol >= 0
-					&& boardCol < width
-					&& rows[boardRow].get(boardCol) != null
-				) {
-					return false;
-				}
-			}
-		}
-		// check against opponent tetromino
-		Tetromino o = t == one ? two : one;
-		int r1 = Math.max(o.row, t.row + dr) - 2;
-		int r2 = Math.min(o.row, t.row + dr) + 2;
-		int c1 = Math.max(o.col, t.col + dc) - 2;
-		int c2 = Math.min(o.col, t.col + dc) + 2;
-		for (int r = r1; r < r2; r += 1) {
-			for (int c = c1; c < c2; c += 1) {
-				if (
-					r >= 0
-					&& r < height
-					&& c >= 0
-					&& c < width
-					&& t.blocks[r - (t.row + dr) + 2][c - (t.col + dc) + 2] != null
-					&& o.blocks[r - o.row + 2][c - o.col + 2] != null
-				) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	private void rotate(Tetromino t) {
 		// TODO implement
-	}
-
-	private void move(Tetromino t, Direction dir) {
-		switch (dir) {
-			case UP:
-			t.row -= 1;
-			break;
-			case DOWN:
-			t.row += 1;
-			break;
-			case LEFT:
-			t.col -= 1;
-			break;
-			case RIGHT:
-			t.col += 1;
-		}
 	}
 
 	// move tetromino blocks to the static board
@@ -212,7 +172,7 @@ public class Game {
 				blocks[i][j] = rows[i].get(j);
 			}
 		}
-		for (Tetromino t : new Tetromino[] { one, two }) {
+		for (Tetromino t : activeTetrominos) {
 			for (int i = 0; i < t.blocks.length; i += 1) {
 				for (int j = 0; j < t.blocks[0].length; j += 1) {
 					int boardRow = t.row + i - 2;
