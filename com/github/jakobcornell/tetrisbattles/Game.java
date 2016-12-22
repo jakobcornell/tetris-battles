@@ -27,10 +27,23 @@ public class Game {
 				return DOWN;
 				case LEFT:
 				return RIGHT;
-				default:
-				return UP;
+				case DOWN:
+					return UP;
 			}
+			return null;
 		}
+	}
+
+	protected final Set<View> views = new HashSet<>(2);
+	public static interface View {
+		public void refresh();
+	}
+
+	public void registerView(View v) {
+		views.add(v);
+	}
+	public void unregisterView(View v) {
+		views.remove(v);
 	}
 
 	private BlockRow[] rows;
@@ -42,7 +55,9 @@ public class Game {
 		for (int r = 0; r < rows.length; r += 1) {
 			rows[r] = new BlockRow(width);
 		}
-		// finish constructing
+		for (Direction d : new Direction[] { Direction.UP, Direction.DOWN }) {
+			activeTetrominos.add(spawn(d));
+		}
 	}
 
 	public void enqueueAction(PlayerAction action) {
@@ -50,6 +65,7 @@ public class Game {
 	}
 
 	public void tick() {
+		boolean needsRefresh = false;
 		for (PlayerAction action : pendingActions) {
 			Tetromino subject = null;
 			for (Tetromino t : activeTetrominos) {
@@ -61,6 +77,7 @@ public class Game {
 			if (subject == null) {
 				break;
 			}
+			needsRefresh = true;
 			switch (action.type) {
 				case MOVE:
 				processMove(subject, action.moveDirection);
@@ -76,12 +93,14 @@ public class Game {
 		for (Tetromino t : activeTetrominos) {
 			t.age += 1;
 			if (t.age % ticksPerStep == 0) {
+				needsRefresh = true;
 				processMove(t, t.movement);
 			}
 		}
 
 		for (Tetromino t : activeTetrominos.toArray(new Tetromino[0])) {
 			if (t.isFrozen) {
+				needsRefresh = true;
 				freeze(t);
 				activeTetrominos.remove(t);
 				Tetromino newTetromino = spawn(t.movement);
@@ -91,6 +110,12 @@ public class Game {
 				else {
 					activeTetrominos.add(newTetromino);
 				}
+			}
+		}
+
+		if (needsRefresh) {
+			for (View v : views) {
+				v.refresh();
 			}
 		}
 
@@ -291,7 +316,7 @@ public class Game {
 					int boardRow = t.row + r;
 					int boardCol = t.col + c;
 					if (t.blocks[r][c] != null) {
-						blocks[r][c] = t.blocks[r][c];
+						blocks[boardRow][boardCol] = t.blocks[r][c];
 					}
 				}
 			}

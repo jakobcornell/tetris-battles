@@ -18,7 +18,7 @@ public class Main {
 		final Game game = new Game();
 		final KeyListener keyListener = new KeyListener() {
 			public void keyPressed(KeyEvent e) {
-				PlayerAction action = keyMap.get(e);
+				PlayerAction action = keyMap.get(e.getKeyCode());
 				if (action != null) {
 					game.enqueueAction(action);
 				}
@@ -43,8 +43,8 @@ public class Main {
 				frame.addKeyListener(keyListener);
 				Container content = frame.getContentPane();
 				content.setLayout(new BoxLayout(content, BoxLayout.X_AXIS));
-				content.add(new BoardPanel(game, Game.Direction.UP, 32));
-				content.add(new BoardPanel(game, Game.Direction.DOWN, 32));
+				content.add(new BoardPanel(game, Game.Direction.UP, 24));
+				content.add(new BoardPanel(game, Game.Direction.DOWN, 24));
 				frame.pack();
 				frame.setVisible(true);
 			}

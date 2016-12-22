@@ -8,7 +8,7 @@ import java.awt.Rectangle;
 import java.awt.Color;
 import java.awt.Dimension;
 
-public class BoardPanel extends JPanel {
+public class BoardPanel extends JPanel implements Game.View {
     private final Game game;
     private final Game.Direction perspective;
     private final int zoomLevel;
@@ -20,9 +20,15 @@ public class BoardPanel extends JPanel {
 		this.zoomLevel = zoomLevel;
 		this.gameState = new Block[game.height][game.width];
 		this.setPreferredSize(new Dimension(game.width * zoomLevel, game.height * zoomLevel));
+		game.registerView(this);
+	}
+
+	public void refresh() {
+		this.repaint();
 	}
 
 	public void paintComponent(Graphics graphics) {
+		super.paintComponent(graphics);
 		Graphics2D ctx = (Graphics2D) graphics;
 		ctx.scale(((float) zoomLevel) / 100, ((float) zoomLevel) / 100);
 		game.getBlocks(gameState);
@@ -36,10 +42,10 @@ public class BoardPanel extends JPanel {
 					block = gameState[game.height - r - 1][game.width - c - 1];
 				}
 				if (block != null) {
-					Shape rectangle = new Rectangle(100*r + 2, 100*c + 2, 96, 96);
-					ctx.setColor(Color.WHITE);
-					ctx.fill(rectangle);
+					Shape rectangle = new Rectangle(100*c + 2, 100*r + 2, 96, 96);
 					ctx.setColor(block.color);
+					ctx.fill(rectangle);
+					ctx.setColor(Color.WHITE);
 					ctx.draw(rectangle);
 				}
 			}

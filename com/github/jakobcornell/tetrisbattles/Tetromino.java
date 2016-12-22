@@ -37,6 +37,7 @@ public class Tetromino {
 				bit = (bit+step)&0xF;
 			}
 		}
+		this.movement = movement;
 	}
 
 	public Tetromino(Game.Direction movement) {
