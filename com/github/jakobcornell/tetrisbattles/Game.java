@@ -81,7 +81,16 @@ public class Game {
 			}
 		}
 
-		activeTetrominos.addAll(newTetrominos);
+		for (Tetromino t : newTetrominos) {
+			for (int rOff = 0; rOff < t.blocks.length; rOff += 1) {
+				for (int cOff = 0; cOff < t.blocks[rOff].length; cOff += 1) {
+					if (t.blocks[rOff][cOff] != null && rows[t.row + rOff].get(t.col + cOff) != null) {
+						// game over
+					}
+				}
+			}
+			activeTetrominos.add(t);
+		}
 		newTetrominos.clear();
 	}
 
@@ -213,6 +222,8 @@ public class Game {
 				}
 			}
 		}
+
+		return true;
 	}
 
 	private void rotate(Tetromino t) {
@@ -240,7 +251,25 @@ public class Game {
 
 	private Tetromino spawn(Direction movement) {
 		Tetromino t = new Tetromino(movement);
-		// TODO Finish setting up t
+		t.col = width / 2 - 2;
+		if (movement == Direction.DOWN) {
+			int i;
+			for (i = 0; i < 16; i += 1) {
+				if (t.blocks[i / 4][i % 4] != null) {
+					break;
+				}
+			}
+			t.row = -(i / 4);
+		}
+		else if (movement == Direction.UP) {
+			int i;
+			for (i = 15; i >= 0; i -= 1) {
+				if (t.blocks[i / 4][i % 4] != null) {
+					break;
+				}
+			}
+			t.row = height - 1 - (i / 4);
+		}
 		return t;
 	}
 
