@@ -11,9 +11,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException, InvocationTargetException {
 		final Game game = new Game();
 		final KeyListener keyListener = new KeyListener() {
 			public void keyPressed(KeyEvent e) {
@@ -36,7 +37,7 @@ public class Main {
 		tickTimer.setDelay(65);
 		tickTimer.setRepeats(true);
 
-		SwingUtilities.invokeNow(new Runnable() {
+		SwingUtilities.invokeAndWait(new Runnable() {
 			public void run() {
 				final JFrame frame = new JFrame("buffy");
 				frame.addKeyListener(keyListener);
@@ -49,14 +50,14 @@ public class Main {
 			}
 		});
 
-		SwingUtilities.invokeLater(new Runnable() {
+		SwingUtilities.invokeAndWait(new Runnable() {
 			public void run() {
 				tickTimer.start();
 			}
 		});
 	}
 
-	private static Map<Integer, PlayerAction> keyMap = new HashMap();
+	private static Map<Integer, PlayerAction> keyMap = new HashMap<>();
 	static {
 		keyMap.put(KeyEvent.VK_W, PlayerAction.P1ROTATE);
 		keyMap.put(KeyEvent.VK_A, PlayerAction.P1LEFT);
