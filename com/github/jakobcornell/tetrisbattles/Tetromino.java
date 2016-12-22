@@ -37,13 +37,13 @@ public class Tetromino {
 	protected static Random random = new Random();
 
 	protected static enum TetrominoPrototype {
-		ITetromino(0x0F00, RotationMode.Even),
-		OTetromino(0x0660, RotationMode.Even),
-		TTetromino(0x0E40, RotationMode.Odd),
-		STetromino(0x0C60, RotationMode.Odd),
-		ZTetromino(0x06C0, RotationMode.Odd),
-		JTetromino(0x0E80, RotationMode.Odd),
-		LTetromino(0x0E20, RotationMode.Odd);
+		I(0x0F00, RotationMode.EVEN),
+		O(0x0660, RotationMode.EVEN),
+		T(0x0E40, RotationMode.ODD),
+		S(0x0C60, RotationMode.ODD),
+		Z(0x06C0, RotationMode.ODD),
+		J(0x0E80, RotationMode.ODD),
+		L(0x0E20, RotationMode.ODD);
 
 		private final int template;
 		private final RotationMode rotationMode;
@@ -61,6 +61,6 @@ public class Tetromino {
 	}
 
 	public static enum RotationMode {
-		Even, Odd;
+		EVEN, ODD;
 	}
 }
