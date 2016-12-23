@@ -6,11 +6,11 @@ import java.util.Random;
 public class Tetromino {
 	public final Block[][] blocks;
 	public final RotationMode rotationMode;
-
 	public boolean isFrozen = false;
 	public int age = 0; // increment each frame: trigger default movement on specific value
 	public Game.Direction movement;
 	public int row, col;
+	protected static Random random = new Random();
 
 	protected Tetromino(Block[][] blocks, RotationMode rotationMode) {
 		this.blocks = blocks;
@@ -22,19 +22,17 @@ public class Tetromino {
 		int bit = 0, step = 0;
 		if (movement == Game.Direction.DOWN) {
 			bit = 0; step = 1;
-		}
-		else if (movement == Game.Direction.UP) {
+		} else if (movement == Game.Direction.UP) {
 			bit = 15; step = 15;
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("movement must be UP or DOWN");
 		}
 		for (Block[] blockRow : blocks) {
-			for (int c=0; c<4; c+=1) {
-				if ((1<<bit & proto.template) != 0) {
+			for (int c = 0; c < 4; c += 1) {
+				if ((1 << bit & proto.template) != 0) {
 					blockRow[c] = new Block();
 				}
-				bit = (bit+step)&0xF;
+				bit = (bit + step) & 0xF;
 			}
 		}
 		this.movement = movement;
@@ -43,7 +41,11 @@ public class Tetromino {
 	public Tetromino(Game.Direction movement) {
 		this(TetrominoPrototype.getRandom(random), movement);
 		float ang = (float) Math.PI * (random.nextFloat() * 14 + 1) / 32;
-		setColor(Color.getHSBColor(movement == Game.Direction.UP ? 0.5f : 0f, (float) Math.cos(ang), (float) Math.sin(ang)));
+		setColor(Color.getHSBColor(
+			movement == Game.Direction.UP ? 0.5f : 0f,
+			(float) Math.cos(ang),
+			(float) Math.sin(ang))
+		);
 	}
 
 	public void setColor(Color c) {
@@ -55,8 +57,6 @@ public class Tetromino {
 			}
 		}
 	}
-
-	protected static Random random = new Random();
 
 	protected static enum TetrominoPrototype {
 		I(0x0F00, RotationMode.Even),

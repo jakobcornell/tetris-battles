@@ -14,8 +14,8 @@ public class BlockRow {
 
 	public void set(int column, Block block) {
 		blocks[column] = block;
-		if(!full) {
-			for(Block b : blocks) {
+		if (!full) {
+			for (Block b : blocks) {
 				if (b == null) {
 					return;
 				}

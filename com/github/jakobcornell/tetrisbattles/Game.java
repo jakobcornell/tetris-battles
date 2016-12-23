@@ -8,6 +8,20 @@ import java.util.HashSet;
 public class Game {
 	public static final int width = 12, height = 30;
 	public static final int ticksPerStep = 30;
+	protected final Set<View> views = new HashSet<>(2);
+	private BlockRow[] rows;
+	private Set<Tetromino> activeTetrominos = new HashSet<Tetromino>();
+	private List<PlayerAction> pendingActions = new ArrayList<>();
+
+	public Game() {
+		rows = new BlockRow[height];
+		for (int r = 0; r < rows.length; r += 1) {
+			rows[r] = new BlockRow(width);
+		}
+		for (Direction d : new Direction[] { Direction.UP, Direction.DOWN }) {
+			activeTetrominos.add(spawn(d));
+		}
+	}
 
 	// direction of block movement or game perspective (right-side-UP or upside-DOWN)
 	public static enum Direction {
@@ -21,20 +35,19 @@ public class Game {
 
 		public Direction reverse() {
 			switch (this) {
-				case RIGHT:
+			case RIGHT:
 				return LEFT;
-				case UP:
+			case UP:
 				return DOWN;
-				case LEFT:
+			case LEFT:
 				return RIGHT;
-				case DOWN:
-					return UP;
+			case DOWN:
+				return UP;
 			}
 			return null;
 		}
 	}
 
-	protected final Set<View> views = new HashSet<>(2);
 	public static interface View {
 		public void refresh();
 	}
@@ -42,22 +55,9 @@ public class Game {
 	public void registerView(View v) {
 		views.add(v);
 	}
+
 	public void unregisterView(View v) {
 		views.remove(v);
-	}
-
-	private BlockRow[] rows;
-	private Set<Tetromino> activeTetrominos = new HashSet<Tetromino>();
-	private List<PlayerAction> pendingActions = new ArrayList<>();
-
-	public Game() {
-		rows = new BlockRow[height];
-		for (int r = 0; r < rows.length; r += 1) {
-			rows[r] = new BlockRow(width);
-		}
-		for (Direction d : new Direction[] { Direction.UP, Direction.DOWN }) {
-			activeTetrominos.add(spawn(d));
-		}
 	}
 
 	public void enqueueAction(PlayerAction action) {
@@ -79,13 +79,14 @@ public class Game {
 			}
 			needsRefresh = true;
 			switch (action.type) {
-				case MOVE:
+			case MOVE:
 				processMove(subject, action.moveDirection);
 				break;
-				case ROTATE:
+			case ROTATE:
 				if (canRotate(subject)) {
 					rotate(subject);
 				}
+				break;
 			}
 		}
 		pendingActions.clear();
@@ -105,9 +106,8 @@ public class Game {
 				activeTetrominos.remove(t);
 				Tetromino newTetromino = spawn(t.movement);
 				if (newTetromino == null) {
-					// player loses
-				}
-				else {
+					// TODO: player loses
+				} else {
 					activeTetrominos.add(newTetromino);
 				}
 			}
@@ -139,6 +139,7 @@ public class Game {
 			for (int cOff = 0; cOff < t.blocks[rOff].length; cOff += 1) {
 				int boardRow = newR + rOff;
 				int boardCol = newC + cOff;
+
 				// check against board edges
 				if (t.blocks[rOff][cOff] != null) {
 					if (
@@ -147,11 +148,11 @@ public class Game {
 					) {
 						t.isFrozen = true;
 						return;
-					}
-					else if (boardCol < 0 || boardCol >= width) {
+					} else if (boardCol < 0 || boardCol >= width) {
 						return;
 					}
 				}
+
 				// check against static blocks
 				if (t.blocks[rOff][cOff] != null && rows[boardRow].get(boardCol) != null) {
 					if (d == t.movement) {
@@ -159,6 +160,7 @@ public class Game {
 					}
 					return;
 				}
+				
 				// check against other tetrominos
 				for (Tetromino other : activeTetrominos) {
 					if (other != t) {
@@ -184,6 +186,7 @@ public class Game {
 				}
 			}
 		}
+		
 		// no collisions
 		t.row = newR;
 		t.col = newC;
@@ -263,18 +266,17 @@ public class Game {
 	// move tetromino blocks to the static board
 	private void freeze(Tetromino t) {
 		for (int r = 0; r < t.blocks.length; r += 1) {
-			for (int c = 0; c < t.blocks[0].length; c += 1) {
-				int boardRow = t.row + r;
-				int boardCol = t.col + c;
-				if (
-					t.blocks[r][c] != null
-					&& boardRow >= 0
-					&& boardRow < height
-					&& boardCol >= 0
-					&& boardCol < width
-				) {
-					rows[boardRow].set(boardCol, t.blocks[r][c]);
+			int boardRow = t.row + r;
+			if (boardRow >= 0 && boardRow < height) {
+				for (int c = 0; c < t.blocks[0].length; c += 1) {
+					int boardCol = t.col + c;
+					if (t.blocks[r][c] != null && boardCol >= 0 && boardCol < width) {
+						rows[boardRow].set(boardCol, t.blocks[r][c]);
+					}
 				}
+				
+				// delete row if needed
+				if
 			}
 		}
 	}
@@ -290,8 +292,7 @@ public class Game {
 				}
 			}
 			t.row = -(i / 4);
-		}
-		else if (movement == Direction.UP) {
+		} else if (movement == Direction.UP) {
 			int i;
 			for (i = 15; i >= 0; i -= 1) {
 				if (t.blocks[i / 4][i % 4] != null) {
