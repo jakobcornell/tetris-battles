@@ -83,6 +83,6 @@ public class Tetromino {
 	}
 
 	public static enum RotationMode {
-		Even, Odd;
+		EVEN, ODD;
 	}
 }
