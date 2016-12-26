@@ -276,7 +276,23 @@ public class Game {
 				}
 				
 				// delete row if needed
-				if
+				if (rows[boardRow].isFull()) {
+					int r = boardRow;
+					switch (t.movement) {
+					case UP:
+						while (r < height - 1) {
+							rows[boardRow] = rows[boardRow + 1];
+							boardRow += 1;
+						}
+						break;
+					case DOWN:
+						while (r > 0) {
+							rows[boardRow] = rows[boardRow - 1];
+							boardRow -= 1;
+						}
+					}
+					rows[boardRow] = new BlockRow(width);
+				}
 			}
 		}
 	}
