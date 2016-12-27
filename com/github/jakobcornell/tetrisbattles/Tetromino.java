@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.util.Random;
 
 public class Tetromino {
-	public final Block[][] blocks;
+	public Block[][] blocks;
 	public final RotationMode rotationMode;
 	public boolean isFrozen = false;
 	public int age = 0; // increment each frame: trigger default movement on specific value
