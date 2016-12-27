@@ -308,23 +308,27 @@ public class Game {
 					}
 				}
 				
-				// delete row if needed
-				if (rows[boardRow].isFull()) {
-					switch (t.movement) {
-					case UP:
-						while (boardRow < height - 1) {
-							rows[boardRow] = rows[boardRow + 1];
-							boardRow += 1;
-						}
-						break;
-					case DOWN:
-						while (boardRow > 0) {
-							rows[boardRow] = rows[boardRow - 1];
-							boardRow -= 1;
-						}
+				
+			}
+		}
+
+		// delete filled rows
+		for (int r = 0; r < t.blocks.length; r += 1) {
+			if (rows[r].isFull()) {
+				switch (t.movement) {
+				case UP:
+					while (r < height - 1) {
+						rows[r] = rows[r + 1];
+						r += 1;
 					}
-					rows[boardRow] = new BlockRow(width);
+					break;
+				case DOWN:
+					while (r > 0) {
+						rows[r] = rows[r - 1];
+						r -= 1;
+					}
 				}
+				rows[r] = new BlockRow(width);
 			}
 		}
 	}
