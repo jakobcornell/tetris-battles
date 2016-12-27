@@ -275,7 +275,24 @@ public class Game {
 	}
 
 	private void rotate(Tetromino t) {
-		// TODO implement
+		Block[][] blocks = new Block[4][4];
+		switch (t.rotationType) {
+		case EVEN:
+			for (int r = 0; r < 4; r += 1) {
+				for (int c = 0; c < 4; c += 1) {
+					blocks[c][3 - r] = t.blocks[r][c];
+				}
+			}
+			break;
+		case ODD:
+			for (int r = 1; r < 4; r += 1) {
+				for (int c = 0; c < 3; c += 1) {
+					blocks[c + 1][2 - (r - 1)] = t.blocks[r][c];
+				}
+			}
+			break;
+		}
+		t.blocks = blocks;
 	}
 
 	// move tetromino blocks to the static board
