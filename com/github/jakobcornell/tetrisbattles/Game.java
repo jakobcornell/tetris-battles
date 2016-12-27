@@ -309,16 +309,15 @@ public class Game {
 				
 				// delete row if needed
 				if (rows[boardRow].isFull()) {
-					int r = boardRow;
 					switch (t.movement) {
 					case UP:
-						while (r < height - 1) {
+						while (boardRow < height - 1) {
 							rows[boardRow] = rows[boardRow + 1];
 							boardRow += 1;
 						}
 						break;
 					case DOWN:
-						while (r > 0) {
+						while (boardRow > 0) {
 							rows[boardRow] = rows[boardRow - 1];
 							boardRow -= 1;
 						}
