@@ -59,13 +59,13 @@ public class Tetromino {
 	}
 
 	protected static enum TetrominoPrototype {
-		I(0x0F00, RotationMode.Even),
-		O(0x0660, RotationMode.Even),
-		T(0x0720, RotationMode.Odd),
-		S(0x0360, RotationMode.Odd),
-		Z(0x0630, RotationMode.Odd),
-		J(0x0710, RotationMode.Odd),
-		L(0x0740, RotationMode.Odd);
+		I(0x0F00, RotationMode.EVEN),
+		O(0x0660, RotationMode.EVEN),
+		T(0x0720, RotationMode.ODD),
+		S(0x0360, RotationMode.ODD),
+		Z(0x0630, RotationMode.ODD),
+		J(0x0710, RotationMode.ODD),
+		L(0x0740, RotationMode.ODD);
 
 		private final int template;
 		private final RotationMode rotationMode;
