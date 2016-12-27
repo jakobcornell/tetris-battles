@@ -272,11 +272,12 @@ public class Game {
 			}
 			return true;
 		}
+		throw new IllegalArgumentException("rotationMode is null or something");
 	}
 
 	private void rotate(Tetromino t) {
 		Block[][] blocks = new Block[4][4];
-		switch (t.rotationType) {
+		switch (t.rotationMode) {
 		case EVEN:
 			for (int r = 0; r < 4; r += 1) {
 				for (int c = 0; c < 4; c += 1) {
