@@ -27,13 +27,18 @@ public class Main {
 			public void keyTyped(KeyEvent e) {}
 		};
 
+		final Timer tickTimer = new Timer(0, null);
+		
 		ActionListener timerListener = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				game.tick();
+				if (game.isFinished()) {
+					tickTimer.stop();
+				}
 			}
 		};
 
-		final Timer tickTimer = new Timer(0, timerListener);
+		tickTimer.addActionListener(timerListener);
 		tickTimer.setDelay(65);
 		tickTimer.setRepeats(true);
 
