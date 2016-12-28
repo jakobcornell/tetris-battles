@@ -46,6 +46,7 @@ public class Main {
 			public void run() {
 				final JFrame frame = new JFrame("buffy");
 				frame.addKeyListener(keyListener);
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				Container content = frame.getContentPane();
 				content.setLayout(new BoxLayout(content, BoxLayout.X_AXIS));
 				content.add(new BoardPanel(game, Game.Direction.UP, 24));
