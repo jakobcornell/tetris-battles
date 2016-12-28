@@ -12,6 +12,10 @@ public class Game {
 	private BlockRow[] rows;
 	private Set<Tetromino> activeTetrominos = new HashSet<Tetromino>();
 	private List<PlayerAction> pendingActions = new ArrayList<>();
+	private boolean isFinished = false;
+
+	// perspective of winner
+	private Direction winner;
 
 	public Game() {
 		rows = new BlockRow[height];
@@ -64,6 +68,14 @@ public class Game {
 		pendingActions.add(action);
 	}
 
+	public boolean isFinished() {
+		return isFinished;
+	}
+
+	public Direction getWinner() {
+		return winner;
+	}
+
 	public void tick() {
 		boolean needsRefresh = false;
 		for (PlayerAction action : pendingActions) {
@@ -106,7 +118,8 @@ public class Game {
 				activeTetrominos.remove(t);
 				Tetromino newTetromino = spawn(t.movement);
 				if (newTetromino == null) {
-					// TODO: player loses
+					isFinished = true;
+					winner = t.movement.reverse();
 				} else {
 					activeTetrominos.add(newTetromino);
 				}
@@ -118,18 +131,6 @@ public class Game {
 				v.refresh();
 			}
 		}
-
-		// TODO: move to spawn
-		//for (Tetromino t : newTetrominos) {
-		//	for (int rOff = 0; rOff < t.blocks.length; rOff += 1) {
-		//		for (int cOff = 0; cOff < t.blocks[rOff].length; cOff += 1) {
-		//			if (t.blocks[rOff][cOff] != null && rows[t.row + rOff].get(t.col + cOff) != null) {
-		//				// game over
-		//			}
-		//		}
-		//	}
-		//	activeTetrominos.add(t);
-		//}
 	}
 
 	private void processMove(Tetromino t, Direction d) {
@@ -336,23 +337,52 @@ public class Game {
 	private Tetromino spawn(Direction movement) {
 		Tetromino t = new Tetromino(movement);
 		t.col = width / 2 - 2;
-		if (movement == Direction.DOWN) {
-			int i;
+		int i;
+		switch (movement) {
+		case DOWN:
 			for (i = 0; i < 16; i += 1) {
 				if (t.blocks[i / 4][i % 4] != null) {
 					break;
 				}
 			}
 			t.row = -(i / 4);
-		} else if (movement == Direction.UP) {
-			int i;
+			break;
+		case UP:
 			for (i = 15; i >= 0; i -= 1) {
 				if (t.blocks[i / 4][i % 4] != null) {
 					break;
 				}
 			}
 			t.row = height - 1 - (i / 4);
+			break;
 		}
+
+		// check whether placement is possible
+		for (int r = 0; r < 4; r += 1) {
+			for (int c = 0; c < 4; c += 1) {
+				if (t.blocks[r][c] != null && rows[t.row + r].get(t.col + c) != null) {
+					return null;
+				}
+			}
+		}
+		for (Tetromino other : activeTetrominos) {
+			int r1 = Math.max(t.row, other.row);
+			int r2 = Math.min(t.row, other.row) + 4;
+			int c1 = Math.max(t.col, other.col);
+			int c2 = Math.min(t.col, other.col) + 4;
+			for (int r = r1; r < r2; r += 1) {
+				for (int c = c1; c < c2; c += 1) {
+					int tr = r - t.row;
+					int tc = c - t.col;
+					int or = r - other.row;
+					int oc = c - other.col;
+					if (t.blocks[tr][tc] != null && other.blocks[or][oc] != null) {
+						return null;
+					}
+				}
+			}
+		}
+
 		return t;
 	}
 
