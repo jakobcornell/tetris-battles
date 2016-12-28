@@ -119,7 +119,7 @@ public class Game {
 				Tetromino newTetromino = spawn(t.movement);
 				if (newTetromino == null) {
 					isFinished = true;
-					winner = t.movement.reverse();
+					winner = t.movement;
 				} else {
 					activeTetrominos.add(newTetromino);
 				}
