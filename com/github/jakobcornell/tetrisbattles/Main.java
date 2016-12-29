@@ -15,7 +15,9 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Main {
 	public static void main(String[] args) throws InterruptedException, InvocationTargetException {
-		final Game game = new Game();
+		final Player one = new Player("Player 1", Game.Direction.UP, Game.Color.RED);
+		final Player two = new Player("Player 2", Game.Direction.DOWN, Game.Color.BLUE);
+		final Game game = new Game(new Player[] {one, two});
 		final KeyListener keyListener = new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				PlayerAction action = keyMap.get(e.getKeyCode());

@@ -1,29 +1,30 @@
 package com.github.jakobcornell.tetrisbattles;
 
 import java.util.Set;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Game {
 	public static final int width = 12, height = 30;
 	public static final int ticksPerStep = 30;
 	protected final Set<View> views = new HashSet<>(2);
 	private BlockRow[] rows;
-	private Set<Tetromino> activeTetrominos = new HashSet<Tetromino>();
+	private Map<Tetromino, Player> players = new HashMap<>();
+	private Set<Tetromino> tetrominos = players.keySet();
 	private List<PlayerAction> pendingActions = new ArrayList<>();
 	private boolean isFinished = false;
+	private Player winner;
 
-	// perspective of winner
-	private Direction winner;
-
-	public Game() {
+	public Game(Player[] players) {
 		rows = new BlockRow[height];
 		for (int r = 0; r < rows.length; r += 1) {
 			rows[r] = new BlockRow(width);
 		}
-		for (Direction d : new Direction[] { Direction.UP, Direction.DOWN }) {
-			activeTetrominos.add(spawn(d));
+		for (Player p : players) {
+			this.players.put(spawn(p), p);
 		}
 	}
 
@@ -52,6 +53,10 @@ public class Game {
 		}
 	}
 
+	public static enum Color {
+		RED, BLUE;
+	}
+
 	public static interface View {
 		public void refresh();
 	}
@@ -72,7 +77,7 @@ public class Game {
 		return isFinished;
 	}
 
-	public Direction getWinner() {
+	public Player getWinner() {
 		return winner;
 	}
 
@@ -80,8 +85,8 @@ public class Game {
 		boolean needsRefresh = false;
 		for (PlayerAction action : pendingActions) {
 			Tetromino subject = null;
-			for (Tetromino t : activeTetrominos) {
-				if (!t.isFrozen && t.movement.reverse() == action.perspective) {
+			for (Tetromino t : tetrominos) {
+				if (!t.isFrozen && players.get(t).perspective == action.perspective) {
 					subject = t;
 					break;
 				}
@@ -103,25 +108,33 @@ public class Game {
 		}
 		pendingActions.clear();
 
-		for (Tetromino t : activeTetrominos) {
+		for (Tetromino t : tetrominos) {
 			t.age += 1;
 			if (t.age % ticksPerStep == 0) {
 				needsRefresh = true;
-				processMove(t, t.movement);
+				processMove(t, players.get(t).playDirection);
 			}
 		}
 
-		for (Tetromino t : activeTetrominos.toArray(new Tetromino[0])) {
+		for (Tetromino t : tetrominos.toArray(new Tetromino[0])) {
 			if (t.isFrozen) {
 				needsRefresh = true;
 				freeze(t);
-				activeTetrominos.remove(t);
-				Tetromino newTetromino = spawn(t.movement);
+				Player owner = players.get(t);
+				tetrominos.remove(t);
+				Tetromino newTetromino = spawn(owner);
 				if (newTetromino == null) {
 					isFinished = true;
-					winner = t.movement;
+					
+					// assumes two players;
+					for (Player p : players.values()) {
+						if (p != owner) {
+							winner = p;
+							break;
+						}
+					}
 				} else {
-					activeTetrominos.add(newTetromino);
+					players.put(newTetromino, owner);
 				}
 			}
 		}
@@ -156,14 +169,14 @@ public class Game {
 
 				// check against static blocks
 				if (t.blocks[rOff][cOff] != null && rows[boardRow].get(boardCol) != null) {
-					if (d == t.movement) {
+					if (d == players.get(t).playDirection) {
 						t.isFrozen = true;
 					}
 					return;
 				}
 				
 				// check against other tetrominos
-				for (Tetromino other : activeTetrominos) {
+				for (Tetromino other : tetrominos) {
 					if (other != t) {
 						int r1 = Math.max(other.row, newR);
 						int r2 = Math.min(other.row, newR) + 4;
@@ -175,7 +188,7 @@ public class Game {
 									t.blocks[r - newR][c - newC] != null
 									&& other.blocks[r - other.row][c - other.col] != null
 								) {
-									if (d == t.movement) {
+									if (d == players.get(t).playDirection) {
 										t.isFrozen = true;
 										other.isFrozen = true;
 									}
@@ -213,7 +226,7 @@ public class Game {
 			}
 
 			// check against other tetrominos
-			for (Tetromino other : activeTetrominos) {
+			for (Tetromino other : tetrominos) {
 				if (other != t) {
 					// these define the range of possible overlap
 					int r1 = Math.max(other.row, t.row);
@@ -252,7 +265,7 @@ public class Game {
 			}
 
 			// check against other tetrominos
-			for (Tetromino other : activeTetrominos) {
+			for (Tetromino other : tetrominos) {
 				if (other != t) {
 					int r1 = Math.max(other.row, t.row);
 					int r2 = Math.min(other.row + 4, t.row + 3);
@@ -308,15 +321,13 @@ public class Game {
 						rows[boardRow].set(boardCol, t.blocks[r][c]);
 					}
 				}
-				
-				
 			}
 		}
 
 		// delete filled rows
 		for (int r = 0; r < t.blocks.length; r += 1) {
 			if (rows[r].isFull()) {
-				switch (t.movement) {
+				switch (players.get(t).playDirection) {
 				case UP:
 					while (r < height - 1) {
 						rows[r] = rows[r + 1];
@@ -334,11 +345,11 @@ public class Game {
 		}
 	}
 
-	private Tetromino spawn(Direction movement) {
-		Tetromino t = new Tetromino(movement);
+	private Tetromino spawn(Player owner) {
+		Tetromino t = new Tetromino(owner.playDirection, owner.color);
 		t.col = width / 2 - 2;
 		int i;
-		switch (movement) {
+		switch (owner.playDirection) {
 		case DOWN:
 			for (i = 0; i < 16; i += 1) {
 				if (t.blocks[i / 4][i % 4] != null) {
@@ -365,7 +376,7 @@ public class Game {
 				}
 			}
 		}
-		for (Tetromino other : activeTetrominos) {
+		for (Tetromino other : tetrominos) {
 			int r1 = Math.max(t.row, other.row);
 			int r2 = Math.min(t.row, other.row) + 4;
 			int c1 = Math.max(t.col, other.col);
@@ -393,7 +404,7 @@ public class Game {
 				blocks[r][c] = rows[r].get(c);
 			}
 		}
-		for (Tetromino t : activeTetrominos) {
+		for (Tetromino t : tetrominos) {
 			for (int r = 0; r < t.blocks.length; r += 1) {
 				for (int c = 0; c < t.blocks[0].length; c += 1) {
 					int boardRow = t.row + r;

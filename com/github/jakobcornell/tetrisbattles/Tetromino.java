@@ -8,7 +8,6 @@ public class Tetromino {
 	public final RotationMode rotationMode;
 	public boolean isFrozen = false;
 	public int age = 0; // increment each frame: trigger default movement on specific value
-	public Game.Direction movement;
 	public int row, col;
 	protected static Random random = new Random();
 
@@ -35,17 +34,15 @@ public class Tetromino {
 				bit = (bit + step) & 0xF;
 			}
 		}
-		this.movement = movement;
 	}
 
-	public Tetromino(Game.Direction movement) {
+	public Tetromino(Game.Direction movement, Game.Color color) {
 		this(TetrominoPrototype.getRandom(random), movement);
 		float ang = (float) Math.PI * (random.nextFloat() * 14 + 1) / 32;
-		setColor(Color.getHSBColor(
-			movement == Game.Direction.UP ? 0.5f : 0f,
-			(float) Math.cos(ang),
-			(float) Math.sin(ang))
-		);
+		float h = (color == Game.Color.RED) ? 0f : 0.5f;
+		float s = (float) Math.cos(ang);
+		float b = (float) Math.sin(ang);
+		setColor(Color.getHSBColor(h, s, b));
 	}
 
 	public void setColor(Color c) {
