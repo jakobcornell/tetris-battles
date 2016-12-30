@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.Random;
 
 public class Tetromino {
+	public int dimension;
 	public Block[][] blocks;
 	public boolean isFrozen = false;
 	public int age = 0;
@@ -13,11 +14,11 @@ public class Tetromino {
 	public Tetromino(Game.Color color) {
 		TetrominoPrototype proto = TetrominoPrototype.getRandom(random);
 
-		int dim = proto.dimension;
-		blocks = new Block[dim][dim];
-		for (int i = 0; i < dim * dim; i += 1) {
-			if (proto.template >> (dim * dim - 1 - i) & 1 != 0) {
-				blocks[i / dim][i % dim] = new Block();
+		dimension = proto.dimension;
+		blocks = new Block[dimension][dimension];
+		for (int i = 0; i < dimension * dimension; i += 1) {
+			if ((proto.template >> (dimension * dimension - 1 - i) & 1) != 0) {
+				blocks[i / dimension][i % dimension] = new Block();
 			}
 		}
 
@@ -52,7 +53,7 @@ public class Tetromino {
 
 		private TetrominoPrototype(int template, int dimension) {
 			this.template = template;
-			this.rotationMode = rotationMode;
+			this.dimension = dimension;
 		}
 
 		private static final TetrominoPrototype[] values = values();

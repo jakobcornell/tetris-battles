@@ -149,8 +149,8 @@ public class Game {
 	private void processMove(Tetromino t, Direction d) {
 		int newR = t.row + d.dr;
 		int newC = t.col + d.dc;
-		for (int rOff = 0; rOff < t.blocks.length; rOff += 1) {
-			for (int cOff = 0; cOff < t.blocks[rOff].length; cOff += 1) {
+		for (int rOff = 0; rOff < t.dimension; rOff += 1) {
+			for (int cOff = 0; cOff < t.dimension; cOff += 1) {
 				int boardRow = newR + rOff;
 				int boardCol = newC + cOff;
 
@@ -179,9 +179,9 @@ public class Game {
 				for (Tetromino other : tetrominos) {
 					if (other != t) {
 						int r1 = Math.max(other.row, newR);
-						int r2 = Math.min(other.row, newR) + 4;
+						int r2 = Math.min(other.row + other.dimension, newR + t.dimension);
 						int c1 = Math.max(other.col, newC);
-						int c2 = Math.min(other.col, newC) + 4;
+						int c2 = Math.min(other.col + other.dimension, newC + t.dimension);
 						for (int r = r1; r < r2; r += 1) {
 							for (int c = c1; c < c2; c += 1) {
 								if (
@@ -207,105 +207,54 @@ public class Game {
 	}
 
 	private boolean canRotate(Tetromino t) {
-		switch (t.rotationMode) {
-		case EVEN:
-			
-			// check against board edges and existing blocks
-			for (int tr = 0; tr < 4; tr += 1) {
-				for (int tc = 0; tc < 4; tc += 1) {
-					if (t.blocks[tr][tc] != null) {
-						int br = t.row + tc;
-						int bc = t.col + 3 - tr;
-						boolean validRow = br >= 0 && br < height;
-						boolean validCol = bc >= 0 && bc < width;
-						if (!validRow || !validCol || rows[br].get(bc) != null) {
-							return false;
-						}
-					}
-				}
-			}
 
-			// check against other tetrominos
-			for (Tetromino other : tetrominos) {
-				if (other != t) {
-					// these define the range of possible overlap
-					int r1 = Math.max(other.row, t.row);
-					int r2 = Math.min(other.row, t.row) + 4;
-					int c1 = Math.max(other.col, t.col);
-					int c2 = Math.min(other.col, t.col) + 4;
-					for (int r = r1; r < r2; r += 1) {
-						for (int c = c1; c < c2; c += 1) {
-							int tRow = 3 - (c - t.col);
-							int tCol = r - t.row;
-							int oRow = r - other.row;
-							int oCol = c - other.col;
-							if (t.blocks[tRow][tCol] != null && other.blocks[oRow][oCol] != null) {
-								return false;
-							}
-						}
+		// check against board edges and existing blocks
+		for (int tr = 0; tr < t.dimension; tr += 1) {
+			for (int tc = 0; tc < t.dimension; tc += 1) {
+				if (t.blocks[tr][tc] != null) {
+					int br = t.row + tc;
+					int bc = t.col + t.dimension - 1 - tr;
+					boolean validRow = br >= 0 && br < height;
+					boolean validCol = bc >= 0 && bc < width;
+					if (!validRow || !validCol || rows[br].get(bc) != null) {
+						return false;
 					}
 				}
 			}
-			return true;
-		case ODD:
-			
-			// check against board edges and existing blocks
-			for (int tr = 1; tr < 4; tr += 1) {
-				for (int tc = 0; tc < 3; tc += 1) {
-					if (t.blocks[tr][tc] != null) {
-						int br = t.row + tc + 1;
-						int bc = t.col + (2 - (tr - 1));
-						boolean validRow = br >= 0 && br < height;
-						boolean validCol = bc >= 0 && bc < width;
-						if (!validRow || !validCol || rows[br].get(bc) != null) {
-							return false;
-						}
-					}
-				}
-			}
-
-			// check against other tetrominos
-			for (Tetromino other : tetrominos) {
-				if (other != t) {
-					int r1 = Math.max(other.row, t.row);
-					int r2 = Math.min(other.row + 4, t.row + 3);
-					int c1 = Math.max(other.col, t.col + 1);
-					int c2 = Math.min(other.col + 4, t.col + 4);
-					for (int r = r1; r < r2; r += 1) {
-						for (int c = c1; c < c2; c += 1) {
-							int tRow = 2 - (c - t.col);
-							int tCol = r - t.row;
-							int oRow = r - other.row;
-							int oCol = c - other.col;
-							if (t.blocks[tRow][tCol] != null && other.blocks[oRow][oCol] != null) {
-								return false;
-							}
-						}
-					}
-				}
-			}
-			return true;
 		}
-		throw new IllegalArgumentException("rotationMode is null or something");
+
+		// check against other tetrominos
+		for (Tetromino other : tetrominos) {
+			if (other != t) {
+				
+				// these define the range of possible overlap
+				int r1 = Math.max(other.row, t.row);
+				int r2 = Math.min(other.row + other.dimension, t.row + t.dimension);
+				int c1 = Math.max(other.col, t.col);
+				int c2 = Math.min(other.col + other.dimension, t.col + t.dimension);
+				
+				for (int r = r1; r < r2; r += 1) {
+					for (int c = c1; c < c2; c += 1) {
+						int tRow = t.dimension - 1 - (c - t.col);
+						int tCol = r - t.row;
+						int oRow = r - other.row;
+						int oCol = c - other.col;
+						if (t.blocks[tRow][tCol] != null && other.blocks[oRow][oCol] != null) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	private void rotate(Tetromino t) {
-		Block[][] blocks = new Block[4][4];
-		switch (t.rotationMode) {
-		case EVEN:
-			for (int r = 0; r < 4; r += 1) {
-				for (int c = 0; c < 4; c += 1) {
-					blocks[c][3 - r] = t.blocks[r][c];
-				}
+		Block[][] blocks = new Block[t.dimension][t.dimension];
+		for (int r = 0; r < t.dimension; r += 1) {
+			for (int c = 0; c < t.dimension; c += 1) {
+				blocks[c][t.dimension - 1 - r] = t.blocks[r][c];
 			}
-			break;
-		case ODD:
-			for (int r = 1; r < 4; r += 1) {
-				for (int c = 0; c < 3; c += 1) {
-					blocks[c + 1][2 - (r - 1)] = t.blocks[r][c];
-				}
-			}
-			break;
 		}
 		t.blocks = blocks;
 	}
@@ -361,31 +310,37 @@ public class Game {
 	}
 
 	private Tetromino spawn(Player owner) {
-		Tetromino t = new Tetromino(owner.playDirection, owner.color);
-		t.col = width / 2 - 2;
+		Tetromino t = new Tetromino(owner.color);
+		int d = t.dimension;
+
+		// apply appropriate position and rotation
 		int i;
 		switch (owner.playDirection) {
 		case DOWN:
-			for (i = 0; i < 16; i += 1) {
-				if (t.blocks[i / 4][i % 4] != null) {
+			for (i = 0; i < d * d; i += 1) {
+				if (t.blocks[i / d][i % d] != null) {
 					break;
 				}
 			}
-			t.row = -(i / 4);
+			t.row = -(i / d);
+			t.col = width / 2 - d + d / 2;
 			break;
 		case UP:
-			for (i = 15; i >= 0; i -= 1) {
-				if (t.blocks[i / 4][i % 4] != null) {
+			rotate(t);
+			rotate(t);
+			for (i = d * d - 1; i >= 0; i -= 1) {
+				if (t.blocks[i / d][i % d] != null) {
 					break;
 				}
 			}
-			t.row = height - 1 - (i / 4);
+			t.row = height - 1 - (i / d);
+			t.col = width / 2 - d / 2;
 			break;
 		}
 
 		// check whether placement is possible
-		for (int r = 0; r < 4; r += 1) {
-			for (int c = 0; c < 4; c += 1) {
+		for (int r = 0; r < d; r += 1) {
+			for (int c = 0; c < d; c += 1) {
 				if (t.blocks[r][c] != null && rows[t.row + r].get(t.col + c) != null) {
 					return null;
 				}
@@ -393,9 +348,9 @@ public class Game {
 		}
 		for (Tetromino other : tetrominos) {
 			int r1 = Math.max(t.row, other.row);
-			int r2 = Math.min(t.row, other.row) + 4;
+			int r2 = Math.min(t.row + t.dimension, other.row + other.dimension);
 			int c1 = Math.max(t.col, other.col);
-			int c2 = Math.min(t.col, other.col) + 4;
+			int c2 = Math.min(t.col + t.dimension, other.col + other.dimension);
 			for (int r = r1; r < r2; r += 1) {
 				for (int c = c1; c < c2; c += 1) {
 					int tr = r - t.row;
@@ -408,7 +363,7 @@ public class Game {
 				}
 			}
 		}
-
+		
 		return t;
 	}
 
@@ -420,8 +375,8 @@ public class Game {
 			}
 		}
 		for (Tetromino t : tetrominos) {
-			for (int r = 0; r < t.blocks.length; r += 1) {
-				for (int c = 0; c < t.blocks[0].length; c += 1) {
+			for (int r = 0; r < t.dimension; r += 1) {
+				for (int c = 0; c < t.dimension; c += 1) {
 					int boardRow = t.row + r;
 					int boardCol = t.col + c;
 					if (t.blocks[r][c] != null) {
