@@ -325,23 +325,38 @@ public class Game {
 		}
 
 		// delete filled rows
-		for (int r = 0; r < t.blocks.length; r += 1) {
-			if (rows[r].isFull()) {
-				switch (players.get(t).playDirection) {
-				case UP:
-					while (r < height - 1) {
-						rows[r] = rows[r + 1];
-						r += 1;
-					}
-					break;
-				case DOWN:
-					while (r > 0) {
-						rows[r] = rows[r - 1];
-						r -= 1;
-					}
+		int src, dest;
+		switch (players.get(t).playDirection) {
+		case UP:
+			src = Math.max(t.row, 0);
+			dest = src;
+			while (src < height) {
+				if (!rows[src].isFull()) {
+					rows[dest] = rows[src];
+					dest += 1;
 				}
-				rows[r] = new BlockRow(width);
+				src += 1;
 			}
+			while (dest < height) {
+				rows[dest] = new BlockRow(width);
+				dest += 1;
+			}
+			break;
+		case DOWN:
+			src = Math.min(t.row, height - 1);
+			dest = src;
+			while (src >= 0) {
+				if (!rows[src].isFull()) {
+					rows[dest] = rows[src];
+					dest -= 1;
+				}
+				src -= 1;
+			}
+			while (dest >= 0) {
+				rows[dest] = new BlockRow(width);
+				dest += 1;
+			}
+			break;
 		}
 	}
 
