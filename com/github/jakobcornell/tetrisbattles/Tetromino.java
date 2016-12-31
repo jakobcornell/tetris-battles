@@ -11,17 +11,9 @@ public class Tetromino {
 	public int row, col;
 	protected static Random random = new Random();
 
-	public Tetromino(Game.Color color) {
-		TetrominoPrototype proto = TetrominoPrototype.getRandom(random);
-
-		dimension = proto.dimension;
-		blocks = new Block[dimension][dimension];
-		for (int i = 0; i < dimension * dimension; i += 1) {
-			if ((proto.template >> (dimension * dimension - 1 - i) & 1) != 0) {
-				blocks[i / dimension][i % dimension] = new Block();
-			}
-		}
-
+	public Tetromino(TetrominoPrototype prototype, Game.Color color) {
+		blocks = prototype.toBlocks();
+		dimension = prototype.dimension;
 		float ang = (float) Math.PI * (random.nextFloat() * 14 + 1) / 32;
 		float h = (color == Game.Color.RED) ? 0f : 0.5f;
 		float s = (float) Math.cos(ang);
@@ -58,8 +50,18 @@ public class Tetromino {
 
 		private static final TetrominoPrototype[] values = values();
 
-		public static TetrominoPrototype getRandom(Random random) {
+		public static TetrominoPrototype getRandom() {
 			return values[random.nextInt(values.length)];
+		}
+
+		public Block[][] toBlocks() {
+			Block[][] blocks = new Block[dimension][dimension];
+			for (int i = 0; i < dimension * dimension; i += 1) {
+				if ((template >> (dimension * dimension - 1 - i) & 1) != 0) {
+					blocks[i / dimension][i % dimension] = new Block();
+				}
+			}
+			return blocks;
 		}
 	}
 }

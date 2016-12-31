@@ -13,6 +13,7 @@ public class Game {
 	protected final Set<View> views = new HashSet<>(2);
 	private BlockRow[] rows;
 	private Map<Tetromino, Player> players = new HashMap<>();
+	private Tetromino.TetrominoPrototype next = Tetromino.TetrominoPrototype.getRandom();
 	private Set<Tetromino> tetrominos = players.keySet();
 	private List<PlayerAction> pendingActions = new ArrayList<>();
 	private boolean isFinished = false;
@@ -79,6 +80,10 @@ public class Game {
 
 	public Player getWinner() {
 		return winner;
+	}
+
+	public Tetromino.TetrominoPrototype getNext() {
+		return next;
 	}
 
 	public void tick() {
@@ -310,7 +315,7 @@ public class Game {
 	}
 
 	private Tetromino spawn(Player owner) {
-		Tetromino t = new Tetromino(owner.color);
+		Tetromino t = new Tetromino(next, owner.color);
 		int d = t.dimension;
 
 		// apply appropriate position and rotation
@@ -364,6 +369,7 @@ public class Game {
 			}
 		}
 		
+		next = Tetromino.TetrominoPrototype.getRandom();
 		return t;
 	}
 
